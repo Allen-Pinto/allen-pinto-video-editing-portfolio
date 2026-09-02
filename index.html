@@ -814,16 +814,17 @@
 </nav>
 
 <!-- ══════════════ HERO / SHOWREEL ══════════════ -->
+<!-- ══════════════ HERO / SHOWREEL ══════════════ -->
 <section id="showreel">
   <div class="hero-video-wrapper reveal">
     <!--
-      Showreel: Auditions — muted, autoplay, no controls, no audio, not interactive
-      ?autoplay=1&muted=1&loop=1&controls=0&nohotkeys=1 hides Mux controls
+      Showreel: Autoplay, muted, loop, no controls
+      Using proper Mux parameters for seamless background playback
     -->
     <iframe
-      src="https://player.mux.com/gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+      src="https://player.mux.com/gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4?autoplay=true&muted=true&loop=true&controls=false&preload=auto&playsinline=true"
       style="position:absolute;inset:0;width:100%;height:100%;border:none;"
-      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
       allowfullscreen
     ></iframe>
     <span class="corner-mark tl">ALLEN PINTO ©</span>
@@ -851,8 +852,6 @@
 
   <a href="#projects" class="btn-primary reveal reveal-delay-4">View Projects ↓</a>
 </section>
-
-<div class="section-divider"></div>
 
 <!-- ══════════════ PROJECTS ══════════════ -->
 <section id="projects">
