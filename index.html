@@ -318,10 +318,42 @@
   /* ─── PROJECTS ───────────────────────────────── */
   #projects { background: linear-gradient(to bottom, var(--bg), var(--bg2)); }
 
+  /* ── PROJECT FILTER BUTTONS ── */
+  .project-filters {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 40px;
+  }
+  .filter-btn {
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid rgba(168,85,247,0.25);
+    color: var(--gray);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color .25s, border-color .25s, background .25s, box-shadow .25s;
+  }
+  .filter-btn:hover {
+    color: var(--white);
+    border-color: rgba(168,85,247,0.5);
+    background: rgba(168,85,247,0.06);
+  }
+  .filter-btn.active {
+    color: var(--white);
+    border-color: var(--purple);
+    background: rgba(168,85,247,0.15);
+    box-shadow: 0 0 16px rgba(168,85,247,0.2);
+  }
+
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 3px;
+  }
+  .project-card.filtered-out {
+    display: none;
   }
 
   /* ── PROJECT CARD ── */
@@ -851,15 +883,24 @@
   <div class="section-wrap">
     <div class="section-label reveal">Projects</div>
     <div class="section-title reveal reveal-delay-1">SELECTED<br><span>WORK</span></div>
+    <div class="project-filters reveal reveal-delay-2" id="project-filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="aftermovies">Aftermovies</button>
+      <button class="filter-btn" data-filter="music-videos">Music Videos</button>
+      <button class="filter-btn" data-filter="dance-reels">Dance Reels</button>
+      <button class="filter-btn" data-filter="promos">Promos</button>
+      <button class="filter-btn" data-filter="trailers">Trailers</button>
+    </div>
   </div>
 
-  <div class="projects-grid">
+  <div class="projects-grid" id="projects-grid">
 
     <!-- 1 — Final Cut (wide hero) -->
     <div class="project-card wide reveal"
          data-playback-id="faLEC01n4REQzaRTmZ00F2rH5da8HejPmEB9oCB5xTrxQ"
          data-title="Final Cut"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="aftermovies">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -886,7 +927,8 @@
     <div class="project-card reveal reveal-delay-1"
          data-playback-id="aqWS6BR02FPRAPVAbQky01CKA0102a8100DEdZ0101wwsCNyro"
          data-title="Mai Baba"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="music-videos">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -913,7 +955,8 @@
     <div class="project-card reveal reveal-delay-2"
          data-playback-id="WPlYaE6SVCD2K015GT00KFoUnSHIDXmiZCLe7hyFbhGCc"
          data-title="Rhythm Sequence"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="dance-reels">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -940,7 +983,8 @@
     <div class="project-card reveal reveal-delay-3"
          data-playback-id="gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4"
          data-title="Talent Call"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="promos">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -967,7 +1011,8 @@
     <div class="project-card reveal reveal-delay-4"
          data-playback-id="zgiKjyGX2AjLWc7Ug01TtfXJRO31AnvR4HQ1aRL35pgM"
          data-title="Ami Kristav Bhava"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="music-videos">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -994,7 +1039,8 @@
     <div class="project-card wide reveal"
          data-playback-id="iyXrrOAeN7Z00PwxUtMBbA8sYsmIc5FHrkCvwFRplUBA"
          data-title="Signature Cut"
-         data-portrait="false">
+         data-portrait="false"
+         data-category="trailers">
       <div class="video-frame">
         <div class="card-iframe-wrap">
           <iframe
@@ -1387,6 +1433,24 @@ document.querySelectorAll('.project-card').forEach(card => {
     card.style.transform = `perspective(900px) rotateY(${x * 5}deg) rotateX(${-y * 3.5}deg) scale(1.10)`;
   });
   card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+});
+
+// ─── PROJECT CATEGORY FILTERS ────────────────────────
+const filterBtns = document.querySelectorAll('#project-filters .filter-btn');
+const projectCards = document.querySelectorAll('#projects-grid .project-card');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    projectCards.forEach(card => {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.classList.toggle('filtered-out', !match);
+    });
+  });
 });
 
 // ─── WIRE UP REEL CARDS ──────────────────────────────
