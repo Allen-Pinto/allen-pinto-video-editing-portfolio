@@ -328,7 +328,7 @@
   .project-card {
     position: relative; overflow: hidden;
     aspect-ratio: 16/9; cursor: pointer;
-    background: var(--bg2);
+    background: #000;
     transition: transform 0.4s ease, box-shadow 0.4s ease;
   }
   .project-card.wide { grid-column: span 2; aspect-ratio: 21/9; }
@@ -338,6 +338,26 @@
     transform: scale(1.10);
     z-index: 10;
     box-shadow: 0 20px 60px rgba(168,85,247,0.25);
+  }
+
+  /* Video frame — keeps the actual video at a true 16:9 ratio so it is
+     never stretched, even inside a wider (21:9) hero card. Regular cards
+     already sit at 16:9 so the frame simply fills them; wide cards
+     letterbox the frame in the middle of the wider container. */
+  .project-card .video-frame {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    aspect-ratio: 16/9;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+  .project-card.wide .video-frame {
+    width: auto;
+    height: 100%;
   }
 
   /* Mux iframe inside project card — silent bg loop */
@@ -351,6 +371,7 @@
     width: 100%; height: 100%;
     border: none; display: block;
     pointer-events: none;
+    object-fit: cover;
   }
 
   /* dark overlay always present */
@@ -520,30 +541,6 @@
   .service-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--purple); flex-shrink: 0; }
   .service-item:hover { color: var(--white); border-color: rgba(168,85,247,0.2); background: rgba(168,85,247,0.04); }
 
-  /* ─── TESTIMONIALS ───────────────────────────── */
-  #clients { background: linear-gradient(to bottom, var(--bg3), var(--bg)); overflow: hidden; }
-  .testimonials-track {
-    display: flex; gap: 20px;
-    animation: scrollLeft 30s linear infinite;
-    width: max-content; padding: 10px 0;
-  }
-  .testimonials-track:hover { animation-play-state: paused; }
-  @keyframes scrollLeft { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-  .testimonial-card {
-    width: 380px; flex-shrink: 0; padding: 36px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(168,85,247,0.1); position: relative;
-  }
-  .testimonial-card::before {
-    content: '"'; font-family: var(--font-serif); font-size: 80px;
-    color: var(--purple); opacity: 0.15; position: absolute; top: 16px; left: 24px; line-height: 1;
-  }
-  .testimonial-text { font-size: 13px; line-height: 1.8; color: #ccc; margin-bottom: 24px; position: relative; font-family: var(--font-body); }
-  .testimonial-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 0.05em; }
-  .testimonial-role { font-family: var(--font-mono); font-size: 9px; color: var(--purple); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 4px; }
-  .stars { display: flex; gap: 3px; margin-bottom: 16px; }
-  .star { color: var(--purple); font-size: 12px; }
-
   /* ─── REELS ──────────────────────────────────── */
   #reels { background: var(--bg); padding: 100px 60px; }
   .reels-grid { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
@@ -624,6 +621,7 @@
   .about-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
   .about-text { font-size: 18px; line-height: 1.9; color: #bbb; font-family: var(--font-body); }
   .about-text strong { color: var(--white); font-weight: 500; }
+  .about-text p + p { margin-top: 20px; }
   .about-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
   .highlight-item { padding: 32px 24px; background: rgba(255,255,255,0.02); border: 1px solid rgba(168,85,247,0.1); }
   .highlight-num { font-family: var(--font-display); font-size: 42px; color: var(--purple); letter-spacing: 0.05em; }
@@ -705,6 +703,7 @@
     .section-wrap { padding: 60px 24px; }
     .projects-grid { grid-template-columns: 1fr; }
     .project-card.wide { grid-column: span 1; aspect-ratio: 16/9; }
+    .project-card.wide .video-frame { width: 100%; height: auto; }
     .tools-row { grid-template-columns: 1fr; }
     .services-grid { grid-template-columns: 1fr 1fr; }
     .contact-grid { grid-template-columns: 1fr; }
@@ -787,10 +786,6 @@
     <span class="tl-dot"></span>
     <span class="tl-label"><span class="tl-time">00:40</span>SKILLS</span>
   </a>
-  <a class="tl-item" href="#clients" data-section="clients">
-    <span class="tl-dot"></span>
-    <span class="tl-label"><span class="tl-time">00:55</span>CLIENTS</span>
-  </a>
   <a class="tl-item" href="#reels" data-section="reels">
     <span class="tl-dot"></span>
     <span class="tl-label"><span class="tl-time">01:15</span>REELS</span>
@@ -807,13 +802,11 @@
   <div class="nav-links">
     <a href="#projects">Projects</a>
     <a href="#skills">Skills</a>
-    <a href="#clients">Clients</a>
     <a href="#reels">Reels</a>
     <a href="#contact">Contact</a>
   </div>
 </nav>
 
-<!-- ══════════════ HERO / SHOWREEL ══════════════ -->
 <!-- ══════════════ HERO / SHOWREEL ══════════════ -->
 <section id="showreel">
   <div class="hero-video-wrapper reveal">
@@ -867,17 +860,19 @@
          data-playback-id="faLEC01n4REQzaRTmZ00F2rH5da8HejPmEB9oCB5xTrxQ"
          data-title="Final Cut"
          data-portrait="false">
-      <div class="card-iframe-wrap">
-        <iframe
-          src="https://player.mux.com/faLEC01n4REQzaRTmZ00F2rH5da8HejPmEB9oCB5xTrxQ?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-        ></iframe>
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/faLEC01n4REQzaRTmZ00F2rH5da8HejPmEB9oCB5xTrxQ?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
       </div>
       <div class="project-num">01</div>
       <div class="project-overlay">
         <div class="project-cat">Event · Aftermovie · 4K</div>
         <div class="project-name">Final Cut</div>
-        <div class="project-meta">4:30 · DaVinci  + After Effects · 2025</div>
+        <div class="project-meta">4:30 · DaVinci + After Effects · 2025</div>
       </div>
       <div class="project-glow"></div>
       <div class="project-click-area"></div>
@@ -887,18 +882,47 @@
       <div class="project-arrow">→</div>
     </div>
 
-    <!-- 2 — Rhythm Sequence -->
+    <!-- 2 — Mai Baba (NEW) -->
     <div class="project-card reveal reveal-delay-1"
+         data-playback-id="aqWS6BR02FPRAPVAbQky01CKA0102a8100DEdZ0101wwsCNyro"
+         data-title="Mai Baba"
+         data-portrait="false">
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/aqWS6BR02FPRAPVAbQky01CKA0102a8100DEdZ0101wwsCNyro?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
+      </div>
+      <div class="project-num">02</div>
+      <div class="project-overlay">
+        <div class="project-cat">Devotional · Music Video</div>
+        <div class="project-name">Mai Baba</div>
+        <div class="project-meta">4:15 · DaVinci + After Effects · 2026</div>
+      </div>
+      <div class="project-glow"></div>
+      <div class="project-click-area"></div>
+      <div class="card-play-btn">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none"><path d="M2 1L14 9L2 17V1Z" fill="#A855F7"/></svg>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <!-- 3 — Rhythm Sequence -->
+    <div class="project-card reveal reveal-delay-2"
          data-playback-id="WPlYaE6SVCD2K015GT00KFoUnSHIDXmiZCLe7hyFbhGCc"
          data-title="Rhythm Sequence"
          data-portrait="false">
-      <div class="card-iframe-wrap">
-        <iframe
-          src="https://player.mux.com/WPlYaE6SVCD2K015GT00KFoUnSHIDXmiZCLe7hyFbhGCc?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-        ></iframe>
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/WPlYaE6SVCD2K015GT00KFoUnSHIDXmiZCLe7hyFbhGCc?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
       </div>
-      <div class="project-num">02</div>
+      <div class="project-num">03</div>
       <div class="project-overlay">
         <div class="project-cat">Dance · Promo</div>
         <div class="project-name">Rhythm Sequence</div>
@@ -912,18 +936,20 @@
       <div class="project-arrow">→</div>
     </div>
 
-    <!-- 3 — Talent Call -->
-    <div class="project-card reveal reveal-delay-2"
+    <!-- 4 — Talent Call -->
+    <div class="project-card reveal reveal-delay-3"
          data-playback-id="gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4"
          data-title="Talent Call"
          data-portrait="false">
-      <div class="card-iframe-wrap">
-        <iframe
-          src="https://player.mux.com/gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-        ></iframe>
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/gVkkJy5OJMQSgOtKXZjYzKGc4OonFM8fLn02beQm02HH4?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
       </div>
-      <div class="project-num">03</div>
+      <div class="project-num">04</div>
       <div class="project-overlay">
         <div class="project-cat">Promo · Social Media</div>
         <div class="project-name">Talent Call</div>
@@ -937,18 +963,47 @@
       <div class="project-arrow">→</div>
     </div>
 
-    <!-- 4 — Signature Cut (wide) -->
-    <div class="project-card wide reveal reveal-delay-3"
+    <!-- 5 — Ami Kristav Bhava (NEW) -->
+    <div class="project-card reveal reveal-delay-4"
+         data-playback-id="zgiKjyGX2AjLWc7Ug01TtfXJRO31AnvR4HQ1aRL35pgM"
+         data-title="Ami Kristav Bhava"
+         data-portrait="false">
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/zgiKjyGX2AjLWc7Ug01TtfXJRO31AnvR4HQ1aRL35pgM?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
+      </div>
+      <div class="project-num">05</div>
+      <div class="project-overlay">
+        <div class="project-cat">Devotional · Music Video</div>
+        <div class="project-name">Ami Kristav Bhava</div>
+        <div class="project-meta">3:45 · DaVinci + After Effects · 2026</div>
+      </div>
+      <div class="project-glow"></div>
+      <div class="project-click-area"></div>
+      <div class="card-play-btn">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none"><path d="M2 1L14 9L2 17V1Z" fill="#A855F7"/></svg>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <!-- 6 — Signature Cut (wide) -->
+    <div class="project-card wide reveal"
          data-playback-id="iyXrrOAeN7Z00PwxUtMBbA8sYsmIc5FHrkCvwFRplUBA"
          data-title="Signature Cut"
          data-portrait="false">
-      <div class="card-iframe-wrap">
-        <iframe
-          src="https://player.mux.com/iyXrrOAeN7Z00PwxUtMBbA8sYsmIc5FHrkCvwFRplUBA?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-        ></iframe>
+      <div class="video-frame">
+        <div class="card-iframe-wrap">
+          <iframe
+            src="https://player.mux.com/iyXrrOAeN7Z00PwxUtMBbA8sYsmIc5FHrkCvwFRplUBA?autoplay=1&muted=1&loop=1&controls=false&preload=auto"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          ></iframe>
+        </div>
       </div>
-      <div class="project-num">04</div>
+      <div class="project-num">06</div>
       <div class="project-overlay">
         <div class="project-cat">Commercial · Cinematic</div>
         <div class="project-name">Signature Cut</div>
@@ -998,31 +1053,6 @@
         <div class="service-item reveal reveal-delay-3">Promotional Videos</div>
         <div class="service-item reveal reveal-delay-4">Dance &amp; Music Edits</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ══════════════ CLIENTS ══════════════ -->
-<section id="clients">
-  <div class="section-wrap" style="padding-bottom: 40px;">
-    <div class="section-label reveal">Testimonials</div>
-    <div class="section-title reveal reveal-delay-1">TRUSTED BY<br><span>50+ CLIENTS</span></div>
-  </div>
-  <div style="overflow: hidden; padding: 20px 0; margin-bottom: 60px;">
-    <div class="testimonials-track">
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Allen transformed our event footage into a cinematic aftermovie. The pacing and storytelling were truly outstanding. Every moment felt intentional."</div><div class="testimonial-name">Rohit Mehra</div><div class="testimonial-role">Event Organizer</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"The dance promo video looked incredibly professional. Allen understands rhythm and visuals perfectly — the cuts were always right on the beat."</div><div class="testimonial-name">Ananya Sharma</div><div class="testimonial-role">Dance Instructor</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"My reels engagement increased massively after working with Allen. The quality is unmatched and delivery is always on time."</div><div class="testimonial-name">Karan Malhotra</div><div class="testimonial-role">Content Creator</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Professional, creative and extremely reliable. Allen elevated our brand visuals beyond what we imagined was possible."</div><div class="testimonial-name">Neha Kapoor</div><div class="testimonial-role">Brand Manager</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Allen has an incredible sense of timing and visual storytelling. The music video edit felt like a proper cinematic piece."</div><div class="testimonial-name">Aditya Verma</div><div class="testimonial-role">Music Producer</div></div>
-      <!-- dupe -->
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Allen transformed our event footage into a cinematic aftermovie. The pacing and storytelling were truly outstanding. Every moment felt intentional."</div><div class="testimonial-name">Rohit Mehra</div><div class="testimonial-role">Event Organizer</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"The dance promo video looked incredibly professional. Allen understands rhythm and visuals perfectly — the cuts were always right on the beat."</div><div class="testimonial-name">Ananya Sharma</div><div class="testimonial-role">Dance Instructor</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"My reels engagement increased massively after working with Allen. The quality is unmatched and delivery is always on time."</div><div class="testimonial-name">Karan Malhotra</div><div class="testimonial-role">Content Creator</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Professional, creative and extremely reliable. Allen elevated our brand visuals beyond what we imagined was possible."</div><div class="testimonial-name">Neha Kapoor</div><div class="testimonial-role">Brand Manager</div></div>
-      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Allen has an incredible sense of timing and visual storytelling. The music video edit felt like a proper cinematic piece."</div><div class="testimonial-name">Aditya Verma</div><div class="testimonial-role">Music Producer</div></div>
     </div>
   </div>
 </section>
@@ -1118,9 +1148,11 @@
     <div>
       <div class="section-label reveal">About</div>
       <div class="section-title reveal reveal-delay-1" style="font-size: clamp(32px, 5vw, 64px); margin-bottom: 28px;">I AM<br><span>ALLEN</span></div>
-      <p class="about-text reveal reveal-delay-2">
-        I'm <strong>Allen Pinto</strong>, a professional video editor with over <strong>5 years of experience</strong> crafting cinematic visuals for creators, brands and events. From social media reels to large promotional edits, I focus on <strong>storytelling, rhythm and impactful visuals</strong> that leave a lasting impression.
-      </p>
+      <div class="about-text reveal reveal-delay-2">
+        <p>I turn raw footage into rhythm-driven stories that stop the scroll. Whether it's a high-energy aftermovie, a cinematic brand ad, or a viral social reel, my goal is simple: <strong>make your audience feel something.</strong></p>
+        <p>With 5+ years of experience and 50+ projects delivered, I don't just edit — I elevate. Fast turnaround, obsessive attention to detail, and a passion for visual storytelling.</p>
+        <p>Let's make something unforgettable. 🎬</p>
+      </div>
     </div>
     <div class="about-highlights reveal reveal-delay-2">
       <div class="highlight-item"><div class="highlight-num">5+</div><div class="highlight-label">Years Experience</div></div>
@@ -1270,7 +1302,7 @@ setTimeout(() => {
 // ─── PROGRESS + NAV SCROLL ──────────────────────────
 const bar = document.getElementById('progress-bar');
 const topnav = document.querySelector('.topnav');
-const sections = ['showreel','projects','skills','clients','reels','contact'];
+const sections = ['showreel','projects','skills','reels','contact'];
 const tlItems  = document.querySelectorAll('.tl-item');
 
 window.addEventListener('scroll', () => {
